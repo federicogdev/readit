@@ -1,10 +1,11 @@
 import { authModalState } from "@/recoil/atoms/authModalAtom";
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import React, { ChangeEvent, FormEvent, useState } from "react";
-import { useSetRecoilState } from "recoil";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { useSetRecoilState } from "recoil";
 import { auth } from "../../../firebase/app";
 import { FIREBASE_ERRORS } from "../../../firebase/errors";
+
 type LoginProps = {};
 
 const Login: React.FC<LoginProps> = () => {
@@ -88,7 +89,9 @@ const Login: React.FC<LoginProps> = () => {
           color="blue.500"
           fontWeight={700}
           cursor="pointer"
-          onClick={() => {}}
+          onClick={() => {
+            setAuthModalState((prev) => ({ ...prev, view: "resetPassword" }));
+          }}
         >
           Reset
         </Text>
