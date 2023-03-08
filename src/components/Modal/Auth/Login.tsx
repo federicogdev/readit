@@ -2,6 +2,7 @@ import { authModalState } from "@/recoil/atoms/authModalAtom";
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import React, { ChangeEvent, useState } from "react";
 import { useSetRecoilState } from "recoil";
+
 type LoginProps = {};
 
 const Login: React.FC<LoginProps> = () => {
@@ -37,6 +38,7 @@ const Login: React.FC<LoginProps> = () => {
         }}
         bg="gray.50"
       />
+
       <Input
         name="password"
         placeholder="password"
@@ -52,11 +54,9 @@ const Login: React.FC<LoginProps> = () => {
         }}
         bg="gray.50"
       />
-
       <Button h="36px" width="100%" my={2} type="submit">
         Login
       </Button>
-
       <Flex fontSize="9pt" justify="center">
         <Text mr={1}>New around here?</Text>
         <Text
