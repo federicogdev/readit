@@ -1,7 +1,11 @@
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { auth } from "@/firebase/app";
+import { FIREBASE_ERRORS } from "@/firebase/errors";
 import { authModalState } from "@/recoil/atoms/authModalAtom";
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
-import React, { ChangeEvent, useState } from "react";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
+
 type RegisterProps = {};
 
 const Register: React.FC<RegisterProps> = () => {
@@ -11,8 +15,20 @@ const Register: React.FC<RegisterProps> = () => {
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
 
-  const onSubmit = () => {};
+  const [createUserWithEmailAndPassword, user, loading, userError] =
+    useCreateUserWithEmailAndPassword(auth);
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (error) setError("");
+    if (registerForm.password !== registerForm.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    createUserWithEmailAndPassword(registerForm.email, registerForm.password);
+  };
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setRegisterForm((prev) => ({
@@ -24,6 +40,7 @@ const Register: React.FC<RegisterProps> = () => {
   return (
     <form onSubmit={onSubmit}>
       <Input
+        required
         name="email"
         placeholder="email"
         type="email"
@@ -39,6 +56,7 @@ const Register: React.FC<RegisterProps> = () => {
         bg="gray.50"
       />
       <Input
+        required
         name="password"
         placeholder="password"
         type="password"
@@ -54,6 +72,7 @@ const Register: React.FC<RegisterProps> = () => {
         bg="gray.50"
       />
       <Input
+        required
         name="confirmPassword"
         placeholder="confirm password"
         type="password"
@@ -69,7 +88,14 @@ const Register: React.FC<RegisterProps> = () => {
         bg="gray.50"
       />
 
-      <Button h="36px" width="100%" my={2} type="submit">
+      {(!!error || userError) && (
+        <Text textAlign="center" color="red" fontSize="10pt">
+          {error ||
+            FIREBASE_ERRORS[userError?.message as keyof typeof FIREBASE_ERRORS]}
+        </Text>
+      )}
+
+      <Button h="36px" width="100%" my={2} type="submit" isLoading={loading}>
         Register
       </Button>
 
