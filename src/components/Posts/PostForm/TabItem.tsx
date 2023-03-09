@@ -9,13 +9,13 @@ export interface ITabItem {
 type TabItemProps = {
   tabItem: ITabItem;
   selected: boolean;
-  setSelected: (value: string) => void;
+  selectedTab: (value: string) => void;
 };
 
 const TabItem: React.FC<TabItemProps> = ({
   tabItem,
   selected,
-  setSelected,
+  selectedTab,
 }) => {
   return (
     <Flex
@@ -30,7 +30,7 @@ const TabItem: React.FC<TabItemProps> = ({
       borderBottomColor={selected ? "blue.500" : "gray.200"}
       borderRightColor="gray.200"
       borderWidth={selected ? "0px 1px 2px 0px" : "0px 1px 1px 0px"}
-      onClick={() => setSelected(tabItem.title)}
+      onClick={() => selectedTab(tabItem.title)}
     >
       <Flex align="center" h="20px" mr={2}>
         <Icon as={tabItem.icon} />

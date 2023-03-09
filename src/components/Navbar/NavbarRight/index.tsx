@@ -7,7 +7,7 @@ import Icons from "./Icons";
 import UserMenu from "./UserMenu";
 
 type NavbarRightProps = {
-  user: User;
+  user?: User | null;
 };
 
 const NavbarRight: FC<NavbarRightProps> = ({ user }) => {
@@ -16,7 +16,7 @@ const NavbarRight: FC<NavbarRightProps> = ({ user }) => {
       <AuthModal />
       <Flex justify="center" align="center">
         {user ? <Icons /> : <AuthButtons />}
-        <UserMenu user={user as User} />
+        <UserMenu user={user} />
       </Flex>
     </>
   );

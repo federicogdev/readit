@@ -23,7 +23,7 @@ import { IoSparkles } from "react-icons/io5";
 import { communityState } from "@/recoil/atoms/communitiesAtom";
 
 type UserMenuProps = {
-  user: User;
+  user?: User | null;
 };
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
