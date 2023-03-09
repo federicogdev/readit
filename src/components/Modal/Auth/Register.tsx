@@ -1,10 +1,12 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import { auth } from "@/firebase/app";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { auth, firestore } from "@/firebase/app";
 import { FIREBASE_ERRORS } from "@/firebase/errors";
 import { authModalState } from "@/recoil/atoms/authModalAtom";
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
+import { User } from "firebase/auth";
+import { addDoc, collection } from "firebase/firestore";
 
 type RegisterProps = {};
 
@@ -17,7 +19,7 @@ const Register: React.FC<RegisterProps> = () => {
   });
   const [error, setError] = useState("");
 
-  const [createUserWithEmailAndPassword, user, loading, userError] =
+  const [createUserWithEmailAndPassword, userCred, loading, userError] =
     useCreateUserWithEmailAndPassword(auth);
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -36,6 +38,19 @@ const Register: React.FC<RegisterProps> = () => {
       [event.target.name]: event.target.value,
     }));
   };
+
+  const createUserDocument = async (user: User) => {
+    await addDoc(
+      collection(firestore, "users"),
+      JSON.parse(JSON.stringify(user))
+    );
+  };
+
+  useEffect(() => {
+    if (userCred) {
+      createUserDocument(userCred.user);
+    }
+  }, [userCred]);
 
   return (
     <form onSubmit={onSubmit}>
