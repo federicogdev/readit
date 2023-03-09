@@ -1,24 +1,29 @@
 import { auth, firestore } from "@/firebase/app";
 import {
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
   Box,
-  Divider,
-  Text,
-  Input,
-  Stack,
+  Button,
   Checkbox,
+  Divider,
   Flex,
   Icon,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { format } from "path";
+import {
+  doc,
+  getDoc,
+  runTransaction,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import React, { ChangeEvent, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { BsFillEyeFill, BsFillPersonFill, BsLockFill } from "react-icons/bs";
@@ -70,17 +75,27 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
     try {
       const communityDocRef = doc(firestore, "communities", communityName);
 
-      const communityDoc = await getDoc(communityDocRef);
+      await runTransaction(firestore, async (transaction) => {
+        const communityDoc = await transaction.get(communityDocRef);
 
-      if (communityDoc.exists()) {
-        throw new Error(`Sorry r/${communityName} already exists.`);
-      }
+        if (communityDoc.exists()) {
+          throw new Error(`Sorry r/${communityName} already exists.`);
+        }
 
-      await setDoc(communityDocRef, {
-        creatorId: user?.uid,
-        createdAt: serverTimestamp(),
-        numberOfMembers: 1,
-        privacyType: communityType,
+        transaction.set(communityDocRef, {
+          creatorId: user?.uid,
+          createdAt: serverTimestamp(),
+          numberOfMembers: 1,
+          privacyType: communityType,
+        });
+
+        transaction.set(
+          doc(firestore, `users/${user?.uid}/communitySnippets`, communityName),
+          {
+            communityId: communityName,
+            isModerator: true,
+          }
+        );
       });
     } catch (error: any) {
       setError(error.message);
@@ -93,12 +108,7 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
       <Modal isOpen={open} onClose={handleClose} size="lg">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader
-            display="flex"
-            flexDirection="column"
-            // fontSize={15}
-            padding={3}
-          >
+          <ModalHeader display="flex" flexDirection="column" padding={3}>
             Create a community
           </ModalHeader>
           <Box px={3}>
