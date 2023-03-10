@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ communityData }) => {
       <Box height="50%" bg="blue.500" />
       <Flex flexGrow={1} justify="center" bg="white">
         <Flex w="95%" maxW="860px">
-          {communityData.imageUrl ? (
+          {communityData.imageURL ? (
             <Image
               src="/images/logo.png"
               w={"60pt"}

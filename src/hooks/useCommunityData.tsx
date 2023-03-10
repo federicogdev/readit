@@ -31,7 +31,7 @@ const useCommunityData = () => {
 
       const newSnippet: CommunitySnippet = {
         communityId: communityData.id,
-        imageURL: communityData.imageUrl || "",
+        imageURL: communityData.imageURL || "",
       };
 
       batch.set(

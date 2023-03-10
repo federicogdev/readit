@@ -2,6 +2,7 @@ import CommunityNotFound from "@/components/Community/CommunityNotFound";
 import CreatePostLink from "@/components/Community/CreatePostLink";
 import Header from "@/components/Community/Header";
 import PageContent from "@/components/Layout/PageContent";
+import Posts from "@/components/Posts";
 import { firestore } from "@/firebase/app";
 import { Community } from "@/recoil/atoms/communitiesAtom";
 import { doc, getDoc } from "firebase/firestore";
@@ -23,6 +24,7 @@ const CommunityPage: React.FC<CommunityPageProps> = ({ communityData }) => {
       <PageContent>
         <>
           <CreatePostLink />
+          <Posts communityData={communityData} />
         </>
         <>2</>
       </PageContent>

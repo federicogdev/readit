@@ -6,7 +6,7 @@ import { Button, Flex, Input, Text } from "@chakra-ui/react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
 import { User } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 type RegisterProps = {};
 
@@ -40,8 +40,13 @@ const Register: React.FC<RegisterProps> = () => {
   };
 
   const createUserDocument = async (user: User) => {
-    await addDoc(
-      collection(firestore, "users"),
+    // await addDoc(
+    //   collection(firestore, "users"),
+    //   JSON.parse(JSON.stringify(user))
+    // );
+
+    await setDoc(
+      doc(collection(firestore, "users"), `${userCred?.user.uid}`),
       JSON.parse(JSON.stringify(user))
     );
   };

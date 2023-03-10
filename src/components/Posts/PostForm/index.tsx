@@ -51,8 +51,6 @@ const PostForm: React.FC<PostFormProps> = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const setPostItems = useSetRecoilState(postState);
-
   const handleCreatePost = async () => {
     const { communityId } = router.query;
     const newPost: Post = {
@@ -76,15 +74,15 @@ const PostForm: React.FC<PostFormProps> = ({ user }) => {
 
         const downloadUrl = await getDownloadURL(imageRef);
 
-        await updateDoc(postDocRef, { imageUrl: downloadUrl });
+        await updateDoc(postDocRef, { imageURL: downloadUrl });
       }
+
+      router.back();
     } catch (error: any) {
       setError(true);
       console.log("createPost error", error);
     }
     setLoading(false);
-
-    // router.back()
   };
 
   const onSelectImage = (event: ChangeEvent<HTMLInputElement>) => {
