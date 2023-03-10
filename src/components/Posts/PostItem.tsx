@@ -1,5 +1,16 @@
 import { Post } from "@/recoil/atoms/postsAtom";
-import { Flex, Icon, Image, Skeleton, Stack, Text } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Flex,
+  Icon,
+  Image,
+  Skeleton,
+  Spinner,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import moment from "moment";
 import React, { useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -19,7 +30,7 @@ type PostItemProps = {
   userIsCreator: boolean;
   userVoteValue?: number;
   onVote: () => {};
-  onDeletePost: () => {};
+  onDeletePost: (post: Post) => Promise<boolean>;
   onSelectPost: () => void;
 };
 
@@ -32,6 +43,24 @@ const PostItem: React.FC<PostItemProps> = ({
   onSelectPost,
 }) => {
   const [imageIsLoading, setImageIsLoading] = useState(true);
+  const [postDeleteLoading, setPostDeleteLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleDelete = async () => {
+    setPostDeleteLoading(true);
+    try {
+      const success = await onDeletePost(post);
+
+      if (!success) {
+        throw new Error("Failed to delete post");
+      }
+
+      console.log("post successfully delete");
+    } catch (error: any) {
+      setError(error.message);
+    }
+    setPostDeleteLoading(false);
+  };
   return (
     <Flex
       border="1px solid"
@@ -72,6 +101,12 @@ const PostItem: React.FC<PostItemProps> = ({
         />
       </Flex>
       <Flex direction="column" w="100%">
+        {error && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertTitle>Error deleting post</AlertTitle>
+          </Alert>
+        )}
         <Stack spacing={1} p="10px">
           <Stack direction="row" spacing={0.6} align="center" fontSize="9pt">
             <Text color="gray.500">
@@ -79,7 +114,7 @@ const PostItem: React.FC<PostItemProps> = ({
               {moment(new Date(post.createdAt.seconds * 1000)).fromNow()}
             </Text>
           </Stack>
-          <Text fontSize="12pt" fontWeight={600}>
+          <Text fontSize="14pt" fontWeight={600}>
             {post.title}
           </Text>
           <Text fontSize="10pt" color="gray.500">
@@ -142,10 +177,16 @@ const PostItem: React.FC<PostItemProps> = ({
               borderRadius={4}
               _hover={{ bg: "gray.300" }}
               cursor="pointer"
-              onClick={onDeletePost}
+              onClick={handleDelete}
             >
-              <Icon as={AiOutlineDelete} mr={2} />
-              <Text fontSize="9pt">Delete</Text>
+              {postDeleteLoading ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  <Icon as={AiOutlineDelete} mr={2} />
+                  <Text fontSize="9pt">Delete</Text>
+                </>
+              )}
             </Flex>
           )}
         </Flex>
